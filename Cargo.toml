@@ -1,0 +1,6 @@
+[package]
+name = "bookish-octo-invention"
+version = "0.1.0"
+authors = ["Jim Huxling <jim.huxling@gmail.com>"]
+
+[dependencies]
