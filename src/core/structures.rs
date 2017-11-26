@@ -17,6 +17,15 @@ pub enum Content {
     Assigned(u64)
 }
 
+impl<'a> Grid<'a> {
+    fn create_with(&self, row: usize, col: usize, possibility: u64, unassigned_cells: Vec<UnassignedCell>) -> Grid {
+        Grid {
+            content: *&self.content,
+            unassigned_cells: &unassigned_cells
+        }
+    }
+}
+
 impl Copy for UnassignedCell {}
 impl Clone for UnassignedCell {
      fn clone(&self) -> Self {
@@ -32,6 +41,8 @@ pub fn solve(grid: Grid) -> Option<Grid> {
     let mut unassigned_cells = grid.unassigned_cells.clone();
     unassigned_cells.reverse();
     let option_cell = &unassigned_cells.pop();
+    unassigned_cells.reverse();
+
     match option_cell {
         &None => {
             if no_conflict(&grid) {
@@ -50,9 +61,14 @@ pub fn solve(grid: Grid) -> Option<Grid> {
                         None
                     }
                 },
-                Possibilities(ref possibilities) => {
-                    //TODO
-                    None
+                Possibilities(ref mut possibilities) => {
+                    match possibilities.pop() {
+                        Some(possibility) => {
+                            let newGrid = grid.create_with(row, col, possibility, unassigned_cells.clone());
+                            solve(newGrid)
+                        },
+                        None => None
+                    }
                 }
             }
         }
